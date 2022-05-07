@@ -1,8 +1,10 @@
 #include "stdio.h"
-#include "config.h"
-#include "vm.h"
+#include "vistack.h"
 
 int main(){
+
+    vrsInit();
+
     vrs_config config = {
             .stackSize = 2048
     };

@@ -86,6 +86,13 @@ build CMakeFiles/app.dir/src/vm.o: C_COMPILER__app_Debug /home/intbyte/projects/
   OBJECT_DIR = CMakeFiles/app.dir
   OBJECT_FILE_DIR = CMakeFiles/app.dir/src
 
+build CMakeFiles/app.dir/src/virstack.o: C_COMPILER__app_Debug /home/intbyte/projects/virstack/src/virstack.c || cmake_object_order_depends_target_app
+  DEP_FILE = CMakeFiles/app.dir/src/virstack.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/intbyte/projects/virstack/src
+  OBJECT_DIR = CMakeFiles/app.dir
+  OBJECT_FILE_DIR = CMakeFiles/app.dir/src
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target app
@@ -94,7 +101,7 @@ build CMakeFiles/app.dir/src/vm.o: C_COMPILER__app_Debug /home/intbyte/projects/
 #############################################
 # Link the executable app
 
-build app: C_EXECUTABLE_LINKER__app_Debug CMakeFiles/app.dir/src/main.o CMakeFiles/app.dir/src/vm.o
+build app: C_EXECUTABLE_LINKER__app_Debug CMakeFiles/app.dir/src/main.o CMakeFiles/app.dir/src/vm.o CMakeFiles/app.dir/src/virstack.o
   FLAGS = -g
   LINK_FLAGS = -rdynamic
   OBJECT_DIR = CMakeFiles/app.dir

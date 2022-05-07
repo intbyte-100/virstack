@@ -2,12 +2,11 @@
 
 enum irset {
     mov,
-    movh,
-    movs,
 
     ld,
     ldh,
-    lds,
+    ldb,
+    ir_count
 };
 
 

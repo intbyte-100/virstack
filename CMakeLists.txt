@@ -8,4 +8,4 @@ add_executable(app src/main.c
         src/config.h
         src/vm.c
         src/vm.h
-        src/util.h src/ir_set.h)
+        src/util.h src/ir_set.h src/vistack.h src/virstack.c)
