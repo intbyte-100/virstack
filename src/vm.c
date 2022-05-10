@@ -1,41 +1,83 @@
 #include "vm.h"
 #include "malloc.h"
-#include "ir_set.h"
+#include "instruction_set.h"
 
-void (*__vrs_instructions[ir_count]) (vrs_vm* vm, const vrs_byte* code);
+void (*__vrs_instructions[exit])(vrs_vm *vm, const vrs_byte *code);
 
-void mov_ir(vrs_vm* vm, const vrs_byte* code){
-    vm->registers[code[vm->registers[15]]] = vm->registers[code[vm->registers[15]+1]];
-    vm->registers[15]+=2;
+void _mov(vrs_vm *vm, const vrs_byte *code) {
+    vm->registers[code[vm->registers[15]]] = vm->registers[code[vm->registers[15] + 1]];
+    vm->registers[15] += 2;
 }
 
-void ld_ir(vrs_vm* vm, const vrs_byte* code){
-    vm->registers[code[vm->registers[15]]] = *((long*) &code[vm->registers[15]+1]);
-    vm->registers[15]+=5;
+void _ld(vrs_vm *vm, const vrs_byte *code) {
+    vm->registers[code[vm->registers[15]]] =
+            vrsForceCast(long, vm->stack[vrsForceCast(int, code[vm->registers[15]+1])]);
+    vm->registers[15] += 5;
 }
 
-void ldh_ir(vrs_vm* vm, const vrs_byte* code){
-    vm->registers[code[vm->registers[15]]] = *((int*) &code[vm->registers[15]+1]);
-    vm->registers[15]+=5;
+void _ldh(vrs_vm *vm, const vrs_byte *code) {
+    vm->registers[code[vm->registers[15]]] = vrsForceCast(int, vm->stack[vrsForceCast(int, code[vm->registers[15]+1])]);
+    vm->registers[15] += 5;
 }
 
-void ldb_ir(vrs_vm* vm, const vrs_byte* code){
-    vm->registers[code[vm->registers[15]]] = code[vm->registers[15]+1];
-    vm->registers[15]+=5;
+void _ldb(vrs_vm *vm, const vrs_byte *code) {
+    vm->registers[code[vm->registers[15]]] = vm->stack[vrsForceCast(int, code[vm->registers[15] + 1])];
+    vm->registers[15] += 5;
 }
 
 
-void vrsInit(void){
-    __vrs_instructions[mov] = &mov_ir;
-    __vrs_instructions[ld] = &ld_ir;
-    __vrs_instructions[ldh] = &ldh_ir;
-    __vrs_instructions[ldb] = &ldb_ir;
+void _str(vrs_vm *vm, const vrs_byte *code) {
+    *(long *) &vm->stack[vrsForceCast(int, code[vm->registers[15] + 1])] = vm->registers[code[vm->registers[15]]];
+    vm->registers[15] += 5;
 }
 
+void _strh(vrs_vm *vm, const vrs_byte *code) {
+    *(int *) &vm->stack[vrsForceCast(int, code[vm->registers[15] + 1])] = vm->registers[code[vm->registers[15]]];
+    vm->registers[15] += 5;
+}
+
+void _strb(vrs_vm *vm, const vrs_byte *code) {
+    *(vrs_byte *) &vm->stack[vrsForceCast(int, code[vm->registers[15] + 1])] = vm->registers[code[vm->registers[15]]];
+    vm->registers[15] += 5;
+}
+
+void _add(vrs_vm *vm, const vrs_byte *code) {
+    vm->registers[code[vm->registers[15]]] = vm->registers[code[vm->registers[15] + 1]] + vm->registers[code[vm->registers[15] + 2]];
+    vm->registers[15] += 3;
+}
+
+void _sub(vrs_vm *vm, const vrs_byte *code) {
+    vm->registers[code[vm->registers[15]]] = vm->registers[code[vm->registers[15] + 1]] - vm->registers[code[vm->registers[15] + 2]];
+    vm->registers[15] += 3;
+}
+
+void _mul(vrs_vm *vm, const vrs_byte *code) {
+    vm->registers[code[vm->registers[15]]] = vm->registers[code[vm->registers[15] + 1]] * vm->registers[code[vm->registers[15] + 2]];
+    vm->registers[15] += 3;
+}
+
+void _div(vrs_vm *vm, const vrs_byte *code) {
+    vm->registers[code[vm->registers[15]]] = vm->registers[code[vm->registers[15] + 1]] / vm->registers[code[vm->registers[15] + 2]];
+    vm->registers[15] += 3;
+}
+
+void vrsInit(void) {
+    __vrs_instructions[mov] = &_mov;
+    __vrs_instructions[ld] = &_ld;
+    __vrs_instructions[ldh] = &_ldh;
+    __vrs_instructions[ldb] = &_ldb;
+    __vrs_instructions[str] = &_str;
+    __vrs_instructions[strh] = &_strh;
+    __vrs_instructions[strb] = &_strb;
+    __vrs_instructions[add] = &_add;
+    __vrs_instructions[sub] = &_sub;
+    __vrs_instructions[mul] = &_mul;
+    __vrs_instructions[div] = &_div;
+}
 
 
 vrs_vm *vrsInitVm(vrs_config *config) {
-    vrs_vm* vm = vrsMalloc(vrs_vm);
+    vrs_vm *vm = vrsMalloc(vrs_vm);
     vm->stack = malloc(config->stackSize);
     return vm;
 }
@@ -43,4 +85,10 @@ vrs_vm *vrsInitVm(vrs_config *config) {
 void vrsDestroyVm(vrs_vm *vm) {
     free(vm->stack);
     free(vm);
+}
+
+void vrsExecute(vrs_vm *vm, unsigned char *code) {
+    while (code[vm->registers[15]] != exit) {
+        __vrs_instructions[code[vm->registers[15]++]](vm, code);
+    }
 }

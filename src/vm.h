@@ -14,5 +14,5 @@ typedef struct {
 
 vrs_vm* vrsInitVm(vrs_config* config);
 void vrsDestroyVm(vrs_vm* vm);
-
+void vrsExecute(vrs_vm* vm, vrs_byte *code);
 void vrsInit(void);
