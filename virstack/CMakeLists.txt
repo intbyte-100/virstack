@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 2.4)
 
 project(virstack)
 
-include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(src)
 
-add_executable(app src/main.c
+add_executable(virstack src/main.c
         src/config.h
         src/vm.c
         src/vm.h
