@@ -2,5 +2,6 @@
 #include "asm.h"
 
 int main(int argc, char** argv){
-    compileFile(fopen(argv[1], "r"), NULL);
+    context *ctx = createContext();
+    compileFile(fopen(argv[1], "r"), ctx);
 }

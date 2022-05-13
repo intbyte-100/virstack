@@ -6,6 +6,7 @@ typedef struct {
     int codeSectionSize;
     char* stack;
     unsigned char* code;
+    int line;
 } context;
 
 context *createContext();
