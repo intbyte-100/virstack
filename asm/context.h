@@ -11,6 +11,6 @@ typedef struct {
 
 context *createContext();
 void destroyContext(context* ctx);
-void pushToStack(context* ctx, int count, char * data);
-void pushToCodeSection(context* ctx, int count, unsigned char * data);
+void pushToStack(context* ctx, int count, void * data);
+void pushToCodeSection(context* ctx, int count, void * data);
 FILE* buildExecutable(context* ctx);

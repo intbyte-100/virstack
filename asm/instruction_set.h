@@ -1,6 +1,7 @@
 #pragma once
 
-enum set {
+
+enum {
     mov,
 
     ld,
@@ -14,9 +15,8 @@ enum set {
     add,
     sub,
     mul,
-    div,
-
-    exit
+    div_inst,
+    exit_inst
 };
 
 

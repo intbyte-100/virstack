@@ -2,23 +2,37 @@
 #include "asm.h"
 #include "string.h"
 #include "stdbool.h"
+#include "instruction_set.h"
+#include <errno.h>
+
+#define SWITCH_BEGIN(value) \
+    if (strcmp(COMPARABLE, value) == 0)
 
 
-#define STRING_SWITCH(value, code) { \
-    const char* switchString = value;        \
-    if (false) ;                             \
-    code                                     \
-}
+#define CASE(value) \
+else if (strcmp(COMPARABLE, value) == 0)
 
-#define CASE(value, code) \
-else if (strcmp(switchString, value) == 0) { \
-    code \
-}
 
-#define DEFAULT(code) else {code}
+#define DEFAULT else
 
 
 const char delim[] = " ";
+
+bool syntaxIsInvalid = false;
+
+unsigned char parseRegister(char* value){
+    errno = 0;
+    if (value[0] != 'R')
+        return 255;
+    value[0] = ' ';
+
+    long registerIndex = strtol(value, NULL, 10);
+
+    if (errno == ERANGE || registerIndex > 15)
+        return 255;
+
+    return registerIndex;
+}
 
 void compileCodeSection(char *line, context *ctx) {
     char *token = strtok(line, delim);
@@ -27,31 +41,42 @@ void compileCodeSection(char *line, context *ctx) {
 
     while (token != NULL) {
         wordIndex++;
-        if (wordIndex != 1)
-            goto compileOperands;
+        unsigned char value;
+        if (wordIndex == 1) {
 
-        STRING_SWITCH(token,
-            CASE("mov", {
+            #define COMPARABLE token
+            SWITCH_BEGIN("mov") {
+                value = mov;
                 argsCount = 2;
-            })
-            CASE("ld", {
+            } CASE("ld") {
+                value = ld;
                 argsCount = 2;
-            })
-            CASE("ldh", {
+            } CASE("ldh") {
+                value = ldh;
                 argsCount = 2;
-            })
-            DEFAULT(
-                    printf("invalid syntax on %i line: unknown symbol \'%s\'\n", ctx->line, token);
-                    continue;
-            )
-        );
+            } CASE("ldb") {
+                value = ldb;
+                argsCount = 2;
+            } DEFAULT {
+                printf("invalid syntax on %i line: unknown symbol \'%s\'\n", ctx->line, token);
+                syntaxIsInvalid = true;
+                continue;
+            }
 
+            if (!syntaxIsInvalid)
+                pushToCodeSection(ctx, 1, &value);
+        } else {
+            if (value == mov) {
+                unsigned char registerIndex = parseRegister(line);
+                syntaxIsInvalid = syntaxIsInvalid || registerIndex == 255;
+            }
+        }
 
-        compileOperands:
         token = strtok(NULL, delim);
     }
     if (wordIndex != argsCount) {
         printf("invalid syntax on %i line: arguments cannot be less then %i\n", ctx->line, argsCount);
+        syntaxIsInvalid = true;
     }
 }
 

@@ -1,4 +1,5 @@
 #include <malloc.h>
+#include <string.h>
 #include "context.h"
 
 context *createContext() {
@@ -11,4 +12,9 @@ void destroyContext(context *ctx) {
     free(ctx->stack);
     free(ctx->code);
     free(ctx);
+}
+
+void pushToCodeSection(context *ctx, int count, void *data) {
+    memcpy(&ctx->code[ctx->codeSectionSize], data, count);
+    ctx->codeSectionSize+=count;
 }
