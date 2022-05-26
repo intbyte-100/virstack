@@ -20,7 +20,7 @@ const char delim[] = " ";
 
 bool syntaxIsInvalid = false;
 
-unsigned char parseRegister(char* value){
+unsigned char parseRegister(char *value) {
     errno = 0;
     if (value[0] != 'R')
         return 255;
@@ -39,12 +39,13 @@ void compileCodeSection(char *line, context *ctx) {
     int wordIndex = 0;
     int argsCount = 0;
 
+    unsigned char value = 255;
+
     while (token != NULL) {
         wordIndex++;
-        unsigned char value;
         if (wordIndex == 1) {
 
-            #define COMPARABLE token
+#define COMPARABLE token
             SWITCH_BEGIN("mov") {
                 value = mov;
                 argsCount = 2;
@@ -58,24 +59,32 @@ void compileCodeSection(char *line, context *ctx) {
                 value = ldb;
                 argsCount = 2;
             } DEFAULT {
-                printf("invalid syntax on %i line: unknown symbol \'%s\'\n", ctx->line, token);
+                printf("invalid syntax on %i line:\n\tthe unknown symbol \'%s\'\n", ctx->line, token);
                 syntaxIsInvalid = true;
                 continue;
             }
+#undef COMPARABLE
 
             if (!syntaxIsInvalid)
                 pushToCodeSection(ctx, 1, &value);
         } else {
             if (value == mov) {
-                unsigned char registerIndex = parseRegister(line);
-                syntaxIsInvalid = syntaxIsInvalid || registerIndex == 255;
+                unsigned char registerIndex = parseRegister(token);
+                if (registerIndex == 255) {
+                    printf("invalid syntax on %i line:\n\tthe unknown register name \'%s\'\n", ctx->line, token);
+                    syntaxIsInvalid = true;
+                } else {
+                    pushToCodeSection(ctx, 1, &registerIndex);
+                }
             }
         }
 
+
         token = strtok(NULL, delim);
     }
-    if (wordIndex != argsCount) {
-        printf("invalid syntax on %i line: arguments cannot be less then %i\n", ctx->line, argsCount);
+    if (argsCount && wordIndex - 1 != argsCount) {
+        printf("invalid syntax on %i line:\n\trequirement argument count = %i;\n\tprovided argument count = %i\n",
+               ctx->line, argsCount, wordIndex - 1);
         syntaxIsInvalid = true;
     }
 }
@@ -105,14 +114,26 @@ void compileFile(FILE *file, context *ctx) {
 
         ctx->line++;
 
+        int i = 0;
+        while (line[i++] != '\0') {
+            if (line[i] == '\n') line[i] = '\0';
+            else if (line[i] == ',' || line[i] == '\t') line[i] = ' ';
+        }
+
+        bool isSectionDefinition = true;
+
         if (strcmp(line, ".stack") == 0)
             isStackSection = true;
         else if (strcmp(line, ".code") == 0)
             isStackSection = false;
-
-        if (isStackSection)
-            compileStackSection(line, ctx);
         else
-            compileCodeSection(line, ctx);
+            isSectionDefinition = false;
+
+        if (!isSectionDefinition) {
+            if (isStackSection)
+                compileStackSection(line, ctx);
+            else
+                compileCodeSection(line, ctx);
+        }
     }
 }
