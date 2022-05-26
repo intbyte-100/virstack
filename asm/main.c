@@ -4,5 +4,5 @@
 int main(int argc, char** argv){
     context *ctx = createContext();
     compileFile(fopen(argv[1], "r"), ctx);
-    destroyContext(ctx);
+    return ctx->compilationFailed;
 }

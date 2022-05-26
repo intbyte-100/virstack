@@ -1,5 +1,6 @@
 #pragma once
 #include <stdio.h>
+#include <stdbool.h>
 
 typedef struct {
     int stackSize;
@@ -7,6 +8,8 @@ typedef struct {
     char* stack;
     unsigned char* code;
     int line;
+    bool compilationFailed;
+    int __currentWord;
 } context;
 
 context *createContext();

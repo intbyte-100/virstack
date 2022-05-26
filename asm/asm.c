@@ -5,90 +5,78 @@
 #include "instruction_set.h"
 #include <errno.h>
 
-#define SWITCH_BEGIN(value) \
-    if (strcmp(COMPARABLE, value) == 0)
-
-
-#define CASE(value) \
-else if (strcmp(COMPARABLE, value) == 0)
-
-
-#define DEFAULT else
-
 
 const char delim[] = " ";
 
-bool syntaxIsInvalid = false;
-
-unsigned char parseRegister(char *value) {
+unsigned char parseRegister(context *ctx, char *value) {
+    bool invalidRegister = value[0] != 'R';
     errno = 0;
-    if (value[0] != 'R')
-        return 255;
-    value[0] = ' ';
 
-    long registerIndex = strtol(value, NULL, 10);
+    long registerIndex = strtol(&value[1], NULL, 10);
 
-    if (errno == ERANGE || registerIndex > 15)
+    if (errno == ERANGE || registerIndex > 15 || invalidRegister) {
+        ctx->compilationFailed = true;
+        printf("invalid syntax in %i line, %i word:\n\tthe unknown register name \'%s\'\n",
+               ctx->line,
+               ctx->__currentWord, value);
         return 255;
+    }
 
     return registerIndex;
 }
 
 void compileCodeSection(char *line, context *ctx) {
     char *token = strtok(line, delim);
-    int wordIndex = 0;
+    ctx->__currentWord = 0;
     int argsCount = 0;
 
     unsigned char value = 255;
 
     while (token != NULL) {
-        wordIndex++;
-        if (wordIndex == 1) {
+        ctx->__currentWord++;
+        if (ctx->__currentWord == 1) {
 
-#define COMPARABLE token
-            SWITCH_BEGIN("mov") {
+            if (strcmp(token, "mov") == 0) {
                 value = mov;
                 argsCount = 2;
-            } CASE("ld") {
+            } else if (strcmp(token, "ld") == 0) {
                 value = ld;
                 argsCount = 2;
-            } CASE("ldh") {
+            } else if (strcmp(token, "ldh") == 0) {
                 value = ldh;
                 argsCount = 2;
-            } CASE("ldb") {
+            } else if (strcmp(token, "ldb") == 0) {
                 value = ldb;
                 argsCount = 2;
-            } DEFAULT {
-                printf("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'\n", ctx->line, wordIndex,  token);
-                syntaxIsInvalid = true;
+            } else {
+                printf("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'\n",
+                       ctx->line,
+                       ctx->__currentWord,
+                       token);
+                ctx->compilationFailed = true;
                 continue;
             }
-#undef COMPARABLE
 
-            if (!syntaxIsInvalid) {
+            if (!ctx->compilationFailed) {
                 pushToCodeSection(ctx, 1, &value);
             }
 
         } else if (value == mov) {
-            unsigned char registerIndex = parseRegister(token);
+            unsigned char registerIndex = parseRegister(ctx, token);
 
-            if (registerIndex == 255) {
-                printf("invalid syntax in %i line, %i word:\n\tthe unknown register name \'%s\'\n", ctx->line, wordIndex, token);
-                syntaxIsInvalid = true;
-            } else if (!syntaxIsInvalid) {
+            if (!ctx->compilationFailed) {
                 pushToCodeSection(ctx, 1, &registerIndex);
             }
-        } else if (value >= ld && value <= ldb) {
-
         }
-
 
         token = strtok(NULL, delim);
     }
-    if (argsCount && wordIndex - 1 != argsCount) {
-        printf("invalid syntax in %i line, %i word:\n\trequirement argument count = %i;\n\tprovided argument count = %i\n",
-               ctx->line, wordIndex, argsCount, wordIndex - 1);
-        syntaxIsInvalid = true;
+    if (argsCount && ctx->__currentWord - 1 != argsCount) {
+        printf("invalid syntax in %i line, %i word:"
+               "\n\trequirement argument count = %i;"
+               "\n\tprovided argument count = %i\n",
+               ctx->line, ctx->__currentWord, argsCount, ctx->__currentWord - 1);
+        ctx->compilationFailed = true;
     }
 }
 
@@ -118,7 +106,7 @@ void compileFile(FILE *file, context *ctx) {
         ctx->line++;
 
         int i = 0;
-        do  {
+        do {
             if (line[i] == '\n') line[i] = '\0';
             else if (line[i] == ',' || line[i] == '\t') line[i] = ' ';
         } while (line[++i] != '\0');
