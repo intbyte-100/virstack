@@ -59,32 +59,35 @@ void compileCodeSection(char *line, context *ctx) {
                 value = ldb;
                 argsCount = 2;
             } DEFAULT {
-                printf("invalid syntax on %i line:\n\tthe unknown symbol \'%s\'\n", ctx->line, token);
+                printf("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'\n", ctx->line, wordIndex,  token);
                 syntaxIsInvalid = true;
                 continue;
             }
 #undef COMPARABLE
 
-            if (!syntaxIsInvalid)
+            if (!syntaxIsInvalid) {
                 pushToCodeSection(ctx, 1, &value);
-        } else {
-            if (value == mov) {
-                unsigned char registerIndex = parseRegister(token);
-                if (registerIndex == 255) {
-                    printf("invalid syntax on %i line:\n\tthe unknown register name \'%s\'\n", ctx->line, token);
-                    syntaxIsInvalid = true;
-                } else {
-                    pushToCodeSection(ctx, 1, &registerIndex);
-                }
             }
+
+        } else if (value == mov) {
+            unsigned char registerIndex = parseRegister(token);
+
+            if (registerIndex == 255) {
+                printf("invalid syntax in %i line, %i word:\n\tthe unknown register name \'%s\'\n", ctx->line, wordIndex, token);
+                syntaxIsInvalid = true;
+            } else if (!syntaxIsInvalid) {
+                pushToCodeSection(ctx, 1, &registerIndex);
+            }
+        } else if (value >= ld && value <= ldb) {
+
         }
 
 
         token = strtok(NULL, delim);
     }
     if (argsCount && wordIndex - 1 != argsCount) {
-        printf("invalid syntax on %i line:\n\trequirement argument count = %i;\n\tprovided argument count = %i\n",
-               ctx->line, argsCount, wordIndex - 1);
+        printf("invalid syntax in %i line, %i word:\n\trequirement argument count = %i;\n\tprovided argument count = %i\n",
+               ctx->line, wordIndex, argsCount, wordIndex - 1);
         syntaxIsInvalid = true;
     }
 }
@@ -115,10 +118,10 @@ void compileFile(FILE *file, context *ctx) {
         ctx->line++;
 
         int i = 0;
-        while (line[i++] != '\0') {
+        do  {
             if (line[i] == '\n') line[i] = '\0';
             else if (line[i] == ',' || line[i] == '\t') line[i] = ' ';
-        }
+        } while (line[++i] != '\0');
 
         bool isSectionDefinition = true;
 
