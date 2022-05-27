@@ -3,7 +3,6 @@
 #include "string.h"
 #include "stdbool.h"
 #include "instruction_set.h"
-#include <errno.h>
 #include "context.h"
 
 
@@ -117,9 +116,44 @@ void compileCodeSection(char *line, context *ctx) {
 void compileStackSection(char *line, context *ctx) {
     char *token = strtok(line, delim);
 
+    ctx->_currentWord = 0;
+
+    char *tokens[2] = {NULL, NULL};
     while (token != NULL) {
-        printf("%s\n", token);
+        if (ctx->_currentWord == 3) {
+            ctx->compilationFailed = true;
+            printf("invalid syntax in %i line, %i word:"
+                   "\n\trequirement argument count = 2;"
+                   "\n\tprovided argument count = %i\n",
+                   ctx->line, ctx->_currentWord, ctx->_currentWord);
+            break;
+        }
+        tokens[ctx->_currentWord] = token;
         token = strtok(NULL, delim);
+        ctx->_currentWord++;
+    }
+
+    if (tokens[0] == NULL) return;
+
+    ctx->_currentWord = 2;
+    if (strcmp(tokens[0], "word") == 0) {
+        long value = parseInteger(ctx, tokens[1]);
+        pushToStack(ctx, 8, &value);
+    } else if (strcmp(tokens[0], "half") == 0) {
+        int value = parseInteger(ctx, tokens[1]);
+        pushToStack(ctx, 4, &value);
+    } else if (strcmp(tokens[0], "little") == 0) {
+        short value = parseInteger(ctx, tokens[1]);
+        pushToStack(ctx, 2, &value);
+    } else if (strcmp(tokens[0], "byte") == 0) {
+        char value = parseInteger(ctx, tokens[1]);
+        pushToStack(ctx, 1, &value);
+    } else {
+        printf("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'\n",
+               ctx->line,
+               ctx->_currentWord,
+               tokens[0]);
+        ctx->compilationFailed = true;
     }
 }
 
@@ -140,7 +174,7 @@ void compileFile(FILE *file, context *ctx) {
 
         int i = 0;
         do {
-            if (line[i] == '\n') line[i] = '\0';
+            if (line[i] == '\n' || line[i] == ';') line[i] = '\0';
             else if (line[i] == ',' || line[i] == '\t') line[i] = ' ';
         } while (line[++i] != '\0');
 

@@ -16,7 +16,7 @@ context *createContext();
 void destroyContext(context* ctx);
 FILE* buildExecutable(context* ctx);
 
-inline void pushToStack(context* ctx, int count, void * data) {
+inline static void pushToStack(context* ctx, int count, void * data) {
     if (ctx->compilationFailed) return;
     memcpy(&ctx->stack[ctx->stackSize], data, count);
     ctx->stackSize += count;

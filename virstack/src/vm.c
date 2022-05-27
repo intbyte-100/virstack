@@ -5,60 +5,60 @@
 void (*__vrs_instructions[exit])(vrs_vm *vm, const vrs_byte *code);
 
 void _mov(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[code[vm->registers[15]]] = vm->registers[code[vm->registers[15] + 1]];
-    vm->registers[15] += 2;
+    vm->registers[code[vm->registers[6]]] = vm->registers[code[vm->registers[6] + 1]];
+    vm->registers[6] += 2;
 }
 
 void _ld(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[code[vm->registers[15]]] =
-            vrsForceCast(long, vm->stack[vrsForceCast(int, code[vm->registers[15]+1])]);
-    vm->registers[15] += 5;
+    vm->registers[code[vm->registers[6]]] =
+            vrsForceCast(long, vm->stack[vrsForceCast(int, code[vm->registers[6]+1])]);
+    vm->registers[6] += 5;
 }
 
 void _ldh(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[code[vm->registers[15]]] = vrsForceCast(int, vm->stack[vrsForceCast(int, code[vm->registers[15]+1])]);
-    vm->registers[15] += 5;
+    vm->registers[code[vm->registers[6]]] = vrsForceCast(int, vm->stack[vrsForceCast(int, code[vm->registers[6]+1])]);
+    vm->registers[6] += 5;
 }
 
 void _ldb(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[code[vm->registers[15]]] = vm->stack[vrsForceCast(int, code[vm->registers[15] + 1])];
-    vm->registers[15] += 5;
+    vm->registers[code[vm->registers[6]]] = vm->stack[vrsForceCast(int, code[vm->registers[6] + 1])];
+    vm->registers[6] += 5;
 }
 
 
 void _str(vrs_vm *vm, const vrs_byte *code) {
-    *(long *) &vm->stack[vrsForceCast(int, code[vm->registers[15] + 1])] = vm->registers[code[vm->registers[15]]];
-    vm->registers[15] += 5;
+    *(long *) &vm->stack[vrsForceCast(int, code[vm->registers[6] + 1])] = vm->registers[code[vm->registers[6]]];
+    vm->registers[6] += 5;
 }
 
 void _strh(vrs_vm *vm, const vrs_byte *code) {
-    *(int *) &vm->stack[vrsForceCast(int, code[vm->registers[15] + 1])] = vm->registers[code[vm->registers[15]]];
-    vm->registers[15] += 5;
+    *(int *) &vm->stack[vrsForceCast(int, code[vm->registers[6] + 1])] = vm->registers[code[vm->registers[6]]];
+    vm->registers[6] += 5;
 }
 
 void _strb(vrs_vm *vm, const vrs_byte *code) {
-    *(vrs_byte *) &vm->stack[vrsForceCast(int, code[vm->registers[15] + 1])] = vm->registers[code[vm->registers[15]]];
-    vm->registers[15] += 5;
+    *(vrs_byte *) &vm->stack[vrsForceCast(int, code[vm->registers[6] + 1])] = vm->registers[code[vm->registers[6]]];
+    vm->registers[6] += 5;
 }
 
 void _add(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[code[vm->registers[15]]] = vm->registers[code[vm->registers[15] + 1]] + vm->registers[code[vm->registers[15] + 2]];
-    vm->registers[15] += 3;
+    vm->registers[code[vm->registers[6]]] = vm->registers[code[vm->registers[6] + 1]] + vm->registers[code[vm->registers[6] + 2]];
+    vm->registers[6] += 3;
 }
 
 void _sub(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[code[vm->registers[15]]] = vm->registers[code[vm->registers[15] + 1]] - vm->registers[code[vm->registers[15] + 2]];
-    vm->registers[15] += 3;
+    vm->registers[code[vm->registers[6]]] = vm->registers[code[vm->registers[6] + 1]] - vm->registers[code[vm->registers[6] + 2]];
+    vm->registers[6] += 3;
 }
 
 void _mul(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[code[vm->registers[15]]] = vm->registers[code[vm->registers[15] + 1]] * vm->registers[code[vm->registers[15] + 2]];
-    vm->registers[15] += 3;
+    vm->registers[code[vm->registers[6]]] = vm->registers[code[vm->registers[6] + 1]] * vm->registers[code[vm->registers[6] + 2]];
+    vm->registers[6] += 3;
 }
 
 void _div(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[code[vm->registers[15]]] = vm->registers[code[vm->registers[15] + 1]] / vm->registers[code[vm->registers[15] + 2]];
-    vm->registers[15] += 3;
+    vm->registers[code[vm->registers[6]]] = vm->registers[code[vm->registers[6] + 1]] / vm->registers[code[vm->registers[6] + 2]];
+    vm->registers[6] += 3;
 }
 
 void vrsInit(void) {
@@ -88,7 +88,7 @@ void vrsDestroyVm(vrs_vm *vm) {
 }
 
 void vrsExecute(vrs_vm *vm, unsigned char *code) {
-    while (code[vm->registers[15]] != exit) {
-        __vrs_instructions[code[vm->registers[15]++]](vm, code);
+    while (code[vm->registers[6]] != exit) {
+        __vrs_instructions[code[vm->registers[6]++]](vm, code);
     }
 }

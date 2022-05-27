@@ -4,8 +4,8 @@
 
 context *createContext() {
     context* ctx = malloc(sizeof(context));
-    ctx->stack = malloc(2048);
-    ctx->code = malloc(2048);
+    ctx->stack = malloc(2048 * 2);
+    ctx->code = malloc(2048 * 2);
 }
 
 void destroyContext(context *ctx) {
