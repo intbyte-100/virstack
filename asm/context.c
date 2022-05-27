@@ -14,7 +14,3 @@ void destroyContext(context *ctx) {
     free(ctx);
 }
 
-void pushToCodeSection(context *ctx, int count, void *data) {
-    memcpy(&ctx->code[ctx->codeSectionSize], data, count);
-    ctx->codeSectionSize+=count;
-}
