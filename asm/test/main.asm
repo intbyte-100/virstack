@@ -1,20 +1,18 @@
+.stack
+    word 0x100
+    half 0x200
+    little 0x100
+    byte 0b10101
+
 .code
     ldh R0, 44
     mov R0, R1
     ldb R3, 0x0b
     ld R3, 0x0b
-
-
-.stack
-    word 100 ; eeeggggggggg
-    half 0x100
-    little 0b0100
-    byte 1
-
-.code
+    ldh R0, 44
     mov R0, R1
-    mov R1, R2
-    mov R5, R3
+    ldb R3, 0x0b
+    ld R3, 0x0b
 
 
 
