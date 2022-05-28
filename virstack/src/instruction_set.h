@@ -16,7 +16,7 @@ enum set {
     mul,
     div,
 
-    exit
+    exit = 255
 };
 
 

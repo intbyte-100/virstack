@@ -14,9 +14,11 @@ void writePve(FILE *file, context *ctx) {
 void writeObjectFile(FILE *file, context *ctx, const char* format) {
     if (ctx->compilationFailed) return;
 
+    printf("creating of the object file...\n");
     if(strcmp("vpe", format) == 0) {
         writePve(file, ctx);
     } else {
         errx(EXIT_FAILURE, "unknown output format '%s'\n", format);
     }
+    printf("complete!\n");
 }

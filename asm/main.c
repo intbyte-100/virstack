@@ -9,6 +9,15 @@ int main(int argc, char **argv) {
     char *format = 0;
     FILE *source;
     FILE *output;
+
+    printf("VRM asm: ");
+    printf("version 0.0.1 alpha\n");
+
+    if (argc == 1) {
+        printf("Developer: intbyte company\n");
+        return 0;
+    }
+
     for (int i = 1; i < argc; ++i) {
         if (argv[i][0] != '-') errx(EXIT_FAILURE, "%s: invalid argument", argv[i]);
 

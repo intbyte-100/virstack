@@ -1,7 +1,7 @@
 #pragma once
 
 
-enum {
+enum inst_set{
     mov,
 
     ld,
@@ -15,8 +15,9 @@ enum {
     add,
     sub,
     mul,
+
     div_inst,
-    exit_inst
+    exit_inst = 255
 };
 
 
