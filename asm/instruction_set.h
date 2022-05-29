@@ -17,6 +17,7 @@ enum inst_set{
     mul,
 
     div_inst,
+    printi,
     exit_inst = 255
 };
 

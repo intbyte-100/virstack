@@ -15,7 +15,7 @@ enum set {
     sub,
     mul,
     div,
-
+    printi,
     exit = 255
 };
 

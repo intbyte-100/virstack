@@ -61,6 +61,10 @@ void _div(vrs_vm *vm, const vrs_byte *code) {
     vm->registers[6] += 3;
 }
 
+void _printi(vrs_vm *vm, const vrs_byte *code) {
+    printf("%li\n",vm->registers[code[vm->registers[6]]]);
+}
+
 void vrsInit(void) {
     __vrs_instructions[mov] = &_mov;
     __vrs_instructions[ld] = &_ld;
@@ -73,6 +77,7 @@ void vrsInit(void) {
     __vrs_instructions[sub] = &_sub;
     __vrs_instructions[mul] = &_mul;
     __vrs_instructions[div] = &_div;
+    __vrs_instructions[printi] = &_printi;
 }
 
 

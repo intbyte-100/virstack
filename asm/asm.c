@@ -100,6 +100,9 @@ void compileCodeSection(char *line, context *ctx) {
             } else if (strcmp(token, "exit") == 0) {
                 value = exit_inst;
                 argsCount = 0;
+            } else if (strcmp(token, "printi") == 0) {
+                value = printi;
+                argsCount = 1;
             } else {
                 warnx("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'",
                        ctx->line,
@@ -125,6 +128,9 @@ void compileCodeSection(char *line, context *ctx) {
                 pushToCodeSection(ctx, 4, &address);
             }
         } else if (value >= add && value <= div_inst) {
+            unsigned char registerIndex = parseRegister(ctx, token);
+            pushToCodeSection(ctx, 1, &registerIndex);
+        } else if (value == printi) {
             unsigned char registerIndex = parseRegister(ctx, token);
             pushToCodeSection(ctx, 1, &registerIndex);
         }
