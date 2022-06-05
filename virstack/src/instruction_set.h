@@ -15,7 +15,15 @@ enum set {
     sub,
     mul,
     div,
+
     printi,
+
+    cmp,
+    cmpl,
+    cmpb,
+    jmp,
+
+
     exit = 255
 };
 

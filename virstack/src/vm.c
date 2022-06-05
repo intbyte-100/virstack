@@ -61,9 +61,34 @@ void _div(vrs_vm *vm, const vrs_byte *code) {
     vm->registers[6] += 3;
 }
 
+void _cmp(vrs_vm *vm, const vrs_byte *code) {
+    vm->registers[code[vm->registers[6]]] = vm->registers[code[vm->registers[6] + 1]] == vm->registers[code[vm->registers[6] + 2]];
+    vm->registers[6] += 3;
+}
+
+void _cmpl(vrs_vm *vm, const vrs_byte *code) {
+    vm->registers[code[vm->registers[6]]] = vm->registers[code[vm->registers[6] + 1]] < vm->registers[code[vm->registers[6] + 2]];
+    vm->registers[6] += 3;
+}
+
+void _cmpb(vrs_vm *vm, const vrs_byte *code) {
+    vm->registers[code[vm->registers[6]]] = vm->registers[code[vm->registers[6] + 1]] > vm->registers[code[vm->registers[6] + 2]];
+    vm->registers[6] += 3;
+}
+
+void _jmp(vrs_vm *vm, const vrs_byte *code) {
+    if (vm->registers[code[vm->registers[6]]]) {
+        vm->registers[6] = vm->registers[code[vm->registers[6] + 1]];
+        return;
+    }
+    vm->registers[6] += 2;
+}
+
 void _printi(vrs_vm *vm, const vrs_byte *code) {
     printf("%li\n",vm->registers[code[vm->registers[6]]]);
+    vm->registers[6]++;
 }
+
 
 void vrsInit(void) {
     __vrs_instructions[mov] = &_mov;
@@ -77,6 +102,10 @@ void vrsInit(void) {
     __vrs_instructions[sub] = &_sub;
     __vrs_instructions[mul] = &_mul;
     __vrs_instructions[div] = &_div;
+    __vrs_instructions[cmp] = &_cmp;
+    __vrs_instructions[cmpl] = &_cmpl;
+    __vrs_instructions[cmpb] = &_cmpb;
+    __vrs_instructions[jmp] = &_jmp;
     __vrs_instructions[printi] = &_printi;
 }
 

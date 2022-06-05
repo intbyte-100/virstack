@@ -15,9 +15,15 @@ enum inst_set{
     add,
     sub,
     mul,
-
     div_inst,
+
     printi,
+
+    cmp,
+    cmpl,
+    cmpb,
+    jmp,
+
     exit_inst = 255
 };
 

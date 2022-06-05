@@ -18,5 +18,7 @@ int main(int argc, char **argv){
         vrs_vm *vm = vrsInitVm(&config);
         memcpy(vm->stack, scope->stack, scope->stackSize);
         vrsExecute(vm, scope->code);
+        vrsDispose(vm);
+        vrsDispose(scope);
     }
 }

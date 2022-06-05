@@ -6,3 +6,7 @@ typedef struct {
     unsigned char *code;
     unsigned char *stack;
 } vrs_scope;
+
+
+void vrsDestroyScope(vrs_scope* scope);
+
