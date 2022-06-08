@@ -89,7 +89,10 @@ void _printi(vrs_vm *vm, const vrs_byte *code) {
     vm->registers[6]++;
 }
 
-
+void _not(vrs_vm *vm, const vrs_byte *code){
+    vm->registers[code[vm->registers[6]]] = !vm->registers[code[vm->registers[6]]];
+    vm->registers[6]++;
+}
 void vrsInit(void) {
     __vrs_instructions[mov] = &_mov;
     __vrs_instructions[ld] = &_ld;
@@ -107,6 +110,7 @@ void vrsInit(void) {
     __vrs_instructions[cmpb] = &_cmpb;
     __vrs_instructions[jmp] = &_jmp;
     __vrs_instructions[printi] = &_printi;
+    __vrs_instructions[not] = &_not;
 }
 
 

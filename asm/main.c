@@ -40,5 +40,5 @@ int main(int argc, char **argv) {
 
     compileFile(source, ctx);
     writeObjectFile(output, ctx, format);
-
+    destroyContext(ctx);
 }

@@ -18,7 +18,8 @@
     ldh R5, 12
     mul R1, R1, R0
     add R0, R0, R5
-    cmpl R4, R0, R2
+    cmpb R4, R0, R2
+    not R4
     jmp R4, R3
     printi R1
     exit

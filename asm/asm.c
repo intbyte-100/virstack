@@ -115,6 +115,9 @@ void compileCodeSection(char *line, context *ctx) {
             } else if (strcmp(token, "jmp") == 0) {
                 value = jmp;
                 argsCount = 2;
+            } else if (strcmp(token, "not") == 0) {
+                value = not;
+                argsCount = 1;
             } else {
                 warnx("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'",
                        ctx->line,
@@ -139,7 +142,7 @@ void compileCodeSection(char *line, context *ctx) {
                 unsigned int address = parseInteger(ctx, token);
                 pushToCodeSection(ctx, 4, &address);
             }
-        } else if (value >= add && value <= jmp) {
+        } else if (value >= add && value <= not) {
             unsigned char registerIndex = parseRegister(ctx, token);
             pushToCodeSection(ctx, 1, &registerIndex);
         }

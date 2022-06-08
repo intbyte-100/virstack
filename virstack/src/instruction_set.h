@@ -23,6 +23,7 @@ enum set {
     cmpb,
     jmp,
 
+    not,
 
     exit = 255
 };
