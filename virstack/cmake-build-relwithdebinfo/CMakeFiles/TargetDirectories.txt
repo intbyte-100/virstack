@@ -1,3 +1,0 @@
-/home/intbyte/CLionProjects/virstack/virstack/cmake-build-relwithdebinfo/CMakeFiles/virstack.dir
-/home/intbyte/CLionProjects/virstack/virstack/cmake-build-relwithdebinfo/CMakeFiles/edit_cache.dir
-/home/intbyte/CLionProjects/virstack/virstack/cmake-build-relwithdebinfo/CMakeFiles/rebuild_cache.dir

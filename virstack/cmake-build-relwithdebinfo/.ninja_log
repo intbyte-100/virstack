@@ -1,7 +1,0 @@
-# ninja log v5
-0	20	1654696606832526285	CMakeFiles/virstack.dir/src/virstack.o	a57f0fb58443378c
-0	30	1654696606842526307	CMakeFiles/virstack.dir/src/main.o	3c15959f5ffea8bc
-30	49	1654696606861526350	CMakeFiles/virstack.dir/src/scope.o	c466690f72d96beb
-20	56	1654696606869526368	CMakeFiles/virstack.dir/src/loader.o	81e7f5e7b34a1d8a
-0	78	1654696606891526418	CMakeFiles/virstack.dir/src/vm.o	bbdda97cc8d686dd
-78	94	1654696606906526452	virstack	1a0ed125c68d3c1b
