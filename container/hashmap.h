@@ -9,7 +9,7 @@ typedef struct {
 
 typedef struct {
     int hash;
-    __vrs_node *nodes;
+    vrs_list *nodes;
 } __vrs_bucket;
 
 typedef struct {
