@@ -1,0 +1,6 @@
+# ninja log v5
+34	96	1654705224414527913	CMakeFiles/test.dir/arraylist.o	de93d369c2bcc4fb
+1	87	1654705224405527898	CMakeFiles/test.dir/array.o	421f2ca14060a14b
+1	54	1654705224372527840	CMakeFiles/test.dir/hashmap.o	21c9ebd5587197de
+0	33	1654705224351527803	CMakeFiles/test.dir/main.o	31e5eac1dcb9e7b4
+96	115	1654705224433527947	test	3b356d2e642f9a3d

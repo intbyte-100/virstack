@@ -1,6 +1,6 @@
 #pragma once
 
-#include "list.h"
+#include "arraylist.h"
 
 typedef struct {
     const char* name;
@@ -9,11 +9,11 @@ typedef struct {
 
 typedef struct {
     int hash;
-    vrs_list *nodes;
+    vrs_arraylist *nodes;
 } __vrs_bucket;
 
 typedef struct {
-    vrs_list* _buckets;
+    vrs_arraylist* _buckets;
 }* vrs_hashmap;
 
 vrs_hashmap vrsCreateHashmap();

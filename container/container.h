@@ -1,5 +1,6 @@
 #pragma once
 
 #include "array.h"
-#include "list.h"
+#include "arraylist.h"
 #include "hashmap.h"
+#include "linkedlist.h"
