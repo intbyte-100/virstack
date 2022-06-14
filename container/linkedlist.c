@@ -16,9 +16,9 @@ void vrsAddLinkedElement(vrs_linked_list *list, void *element) {
         return;
     }
 
-    vrs_list_node* each = list->first;
-    while (true){
-        if(each->next == NULL) {
+    vrs_list_node *each = list->first;
+    while (true) {
+        if (each->next == NULL) {
             each->next = node;
             return;
         }
@@ -28,7 +28,7 @@ void vrsAddLinkedElement(vrs_linked_list *list, void *element) {
 
 void **vrsGetElement(vrs_linked_list *list, unsigned int index) {
     int i = 0;
-    vrs_list_node* node = list->first;
+    vrs_list_node *node = list->first;
     while (i++ != index) {
         node = node->next;
     }
@@ -58,4 +58,40 @@ void *vrsRemoveElement(vrs_linked_list *list, unsigned int index) {
         }
         node = node->next;
     }
+}
+
+typedef struct {
+    vrs_iterator iterator;
+    vrs_linked_list *list;
+    vrs_list_node *node;
+    int nodeIndex;
+} vrs_linked_list_iterator;
+
+int linkedListHas(vrs_iterator *iterator) {
+    vrs_linked_list_iterator *iter = (vrs_linked_list_iterator *) iterator;
+    return iter->nodeIndex < iter->list->size;
+}
+
+vrs_iterator_element linkedListNext(vrs_iterator *iterator) {
+    vrs_linked_list_iterator *iter = (vrs_linked_list_iterator *) iterator;
+
+    iter->nodeIndex++;
+    vrs_list_node *node = iter->node;
+    iter->node = iter->node->next;
+    return node->value;
+}
+
+void linkedListIteratorDispose(vrs_iterator *iterator) {
+    free(iterator);
+}
+
+vrs_iterator *vrsLinkedListIterator(vrs_linked_list *list) {
+    vrs_linked_list_iterator *iterator = malloc(sizeof(vrs_linked_list_iterator));
+    iterator->list = list;
+    iterator->node = list->first;
+    iterator->nodeIndex = 0;
+    iterator->iterator.has = &linkedListHas;
+    iterator->iterator.next = &linkedListNext;
+    iterator->iterator.dispose = &linkedListIteratorDispose;
+    return (vrs_iterator *) iterator;
 }

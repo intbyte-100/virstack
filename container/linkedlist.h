@@ -1,5 +1,7 @@
 #pragma once
 
+#include "iteraror.h"
+
 struct vrs_list_node {
     struct vrs_list_node* next;
     void* value;
@@ -16,3 +18,4 @@ vrs_linked_list *vrsLinkedList();
 void vrsAddLinkedElement(vrs_linked_list *list,void *element);
 void **vrsGetElement(vrs_linked_list *list,unsigned int index);
 void *vrsRemoveElement(vrs_linked_list *list, unsigned int index);
+vrs_iterator *vrsLinkedListIterator(vrs_linked_list *list);

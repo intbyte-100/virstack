@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "container.h"
 
 int main(){
@@ -7,10 +8,15 @@ int main(){
     vrsAddLinkedElement(list,(void*) 0x3);
     vrsAddLinkedElement(list,(void*) 0x4);
     vrsAddLinkedElement(list,(void*) 0x5);
-    int size = list->size;
-    for (int i = 0; i < size; ++i) {
-        vrsRemoveElement(list, 0);
-    }
+
+
+    vrs_iterator *iter = vrsLinkedListIterator(list);
+
+    vrs_foreach(iter, int next, {
+        printf("%i\n", next);
+    })
+
+    iter->dispose(iter);
 
     return 0;
 }
