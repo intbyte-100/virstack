@@ -22,8 +22,9 @@ enum inst_set{
     cmp,
     cmpl,
     cmpb,
-    jmp,
     not,
+    jmp,
+
 
     exit_inst = 255
 };

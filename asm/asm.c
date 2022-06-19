@@ -134,7 +134,7 @@ void compileCodeSection(char *line, context *ctx) {
             unsigned char registerIndex = parseRegister(ctx, token);
             pushToCodeSection(ctx, 1, &registerIndex);
 
-        } else if ((value >= ld && value <= strb)) {
+        } else if ((value >= ld && value <= strb) || value == jmp) {
             if (ctx->_currentWord == 2) {
                 unsigned char registerIndex = parseRegister(ctx, token);
                 pushToCodeSection(ctx, 1, &registerIndex);

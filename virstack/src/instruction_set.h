@@ -21,9 +21,8 @@ enum set {
     cmp,
     cmpl,
     cmpb,
-    jmp,
-
     not,
+    jmp,
 
     exit = 255
 };

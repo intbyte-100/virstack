@@ -32,7 +32,7 @@ void _str(vrs_vm *vm, const vrs_byte *code) {
 }
 
 void _strh(vrs_vm *vm, const vrs_byte *code) {
-    *(int *) &vm->stack[vrsForceCast(int, code[vm->registers[6] + 1])] = vm->registers[code[vm->registers[6]]];
+    *(int *) &vm->stack[vrsForceCast(int, code[vm->registers[6] + 1])] = (int) vm->registers[code[vm->registers[6]]];
     vm->registers[6] += 5;
 }
 
@@ -78,7 +78,7 @@ void _cmpb(vrs_vm *vm, const vrs_byte *code) {
 
 void _jmp(vrs_vm *vm, const vrs_byte *code) {
     if (vm->registers[code[vm->registers[6]]]) {
-        vm->registers[6] = vm->registers[code[vm->registers[6] + 1]];
+        vm->registers[6] = vrsForceCast(int, code[vm->registers[6]+1]);
         return;
     }
     vm->registers[6] += 2;

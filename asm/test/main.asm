@@ -1,29 +1,19 @@
-
-
 .stack
-
-.stack
-    half 1
-    half 0x001
-    half 20
-    half 1
-    half 30
-
-
+        init: half 1000
+        seven: half 7
+        zero: half 0
+        word 24
 .code
-    ldh R0, 4
-    ldh R1, 0
-    ldh R2, 8
-    ldh R3, 16
-    ldh R5, 12
-    mul R1, R1, R0
-    add R0, R0, R5
-    cmpb R4, R0, R2
-    not R4
-    jmp R4, R3
-    printi R1
-    exit
-
+        ldh R0, 0
+        ldh R1, 4
+        ldh R2, 8
+        ld R4, 12
+        ld R1, %num:100
+        printi R0
+        sub R0, R0, R1 ; R0 = R0 - R1
+        cmpb R3, R0, R2 ; R3 = R0 < R2
+        jmp R3, 24
+        exit
 
 
 
