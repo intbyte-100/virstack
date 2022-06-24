@@ -2,6 +2,7 @@
 #include <err.h>
 #include "asm.h"
 #include "output.h"
+#include "opcode.h"
 
 
 int main(int argc, char **argv) {
@@ -9,6 +10,7 @@ int main(int argc, char **argv) {
     FILE *source;
     FILE *output;
 
+    initOpcodes();
     printf("VRM asm: ");
     printf("version 0.0.1 alpha\n");
 

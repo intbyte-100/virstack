@@ -4,5 +4,5 @@ project(vasm)
 
 include_directories(src)
 
-add_executable(vasm main.c instruction_set.h asm.c asm.h context.c context.h output.c output.h)
+add_executable(vasm main.c instruction_set.h asm.c asm.h context.c context.h output.c output.h opcode.h opcode.c)
 target_link_libraries(vasm Container)

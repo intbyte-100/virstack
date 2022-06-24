@@ -12,7 +12,6 @@
         sub R0, R0, R1 ; R0 = R0 - R1
         cmpb R3, R0, R2 ; R3 = R0 < R2
         cmp R4, R0, R2
-        or R3, R3, R4
         jmp R3, 24
         exit
 

@@ -3,7 +3,7 @@
 #include "asm.h"
 #include "string.h"
 #include "stdbool.h"
-#include "instruction_set.h"
+#include "opcode.h"
 #include "context.h"
 
 
@@ -59,98 +59,37 @@ void compileCodeSection(char *line, context *ctx) {
     int argsCount = 0;
 
     unsigned char value = 255;
+    char *operandsType = NULL;
 
     while (token != NULL) {
         ctx->_currentWord++;
+
         if (ctx->_currentWord == 1) {
 
-            if (strcmp(token, "mov") == 0) {
-                value = mov;
-                argsCount = 2;
-            } else if (strcmp(token, "ld") == 0) {
-                value = ld;
-                argsCount = 2;
-            } else if (strcmp(token, "ldh") == 0) {
-                value = ldh;
-                argsCount = 2;
-            } else if (strcmp(token, "ldb") == 0) {
-                value = ldb;
-                argsCount = 2;
-            } else if (strcmp(token, "str") == 0) {
-                value = str;
-                argsCount = 2;
-            } else if (strcmp(token, "strh") == 0) {
-                value = strh;
-                argsCount = 2;
-            } else if (strcmp(token, "strb") == 0) {
-                value = strb;
-                argsCount = 2;
-            } else if (strcmp(token, "add") == 0) {
-                value = add;
-                argsCount = 3;
-            } else if (strcmp(token, "sub") == 0) {
-                value = sub;
-                argsCount = 3;
-            } else if (strcmp(token, "mul") == 0) {
-                value = mul;
-                argsCount = 3;
-            } else if (strcmp(token, "div") == 0) {
-                value = div_inst;
-                argsCount = 3;
-            } else if (strcmp(token, "exit") == 0) {
-                value = exit_inst;
-                argsCount = 0;
-            } else if (strcmp(token, "printi") == 0) {
-                value = printi;
-                argsCount = 1;
-            } else if (strcmp(token, "cmp") == 0) {
-                value = cmp;
-                argsCount = 3;
-            } else if (strcmp(token, "cmpl") == 0) {
-                value = cmpl;
-                argsCount = 3;
-            } else if (strcmp(token, "cmpb") == 0) {
-                value = cmpb;
-                argsCount = 3;
-            } else if (strcmp(token, "jmp") == 0) {
-                value = jmp;
-                argsCount = 2;
-            } else if (strcmp(token, "not") == 0) {
-                value = not;
-                argsCount = 1;
-            } else if (strcmp(token, "or") == 0) {
-                value = or;
-                argsCount = 3;
-            } else if (strcmp(token, "and") == 0) {
-                value = and;
-                argsCount = 3;
-            } else {
-                warnx("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'",
-                       ctx->line,
-                       ctx->_currentWord,
-                       token);
-                ctx->compilationFailed = true;
-                continue;
-            }
+
+            vrs_iterator *iter = vrsLinkedListIterator(opcodes);
+            vrs_foreach(iter, opcode *i, {
+                if (strcmp(i->name, token) == 0) {
+                    argsCount = i->argc;
+                    operandsType = &i->operands;
+                    value = i->opcode;
+                    break;
+                }
+            })
+            iter->dispose(iter);
 
             pushToCodeSection(ctx, 1, &value);
 
 
-        } else if (value == mov) {
-            unsigned char registerIndex = parseRegister(ctx, token);
-            pushToCodeSection(ctx, 1, &registerIndex);
-
-        } else if ((value >= ld && value <= strb) || value == jmp) {
-            if (ctx->_currentWord == 2) {
+        } else {
+            char i = operandsType[ctx->_currentWord - 2];
+            if (i == REGISTER) {
                 unsigned char registerIndex = parseRegister(ctx, token);
                 pushToCodeSection(ctx, 1, &registerIndex);
-            } else if (ctx->_currentWord == 3) {
-                unsigned int address = parseInteger(ctx, token);
-                pushToCodeSection(ctx, 4, &address);
+            } else if (i > REGISTER || i <= I64) {
+                unsigned long number = parseInteger(ctx, token);
+                pushToCodeSection(ctx, i, &number);
             }
-        } else if (value >= add && value <= not || (value == or || value == and)) {
-            unsigned char registerIndex = parseRegister(ctx, token);
-            pushToCodeSection(ctx, 1, &registerIndex);
         }
 
         token = strtok(NULL, delim);

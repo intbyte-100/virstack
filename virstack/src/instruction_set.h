@@ -1,6 +1,6 @@
 #pragma once
 
-enum set {
+enum inst_set{
     mov,
 
     ld,
