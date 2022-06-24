@@ -118,6 +118,12 @@ void compileCodeSection(char *line, context *ctx) {
             } else if (strcmp(token, "not") == 0) {
                 value = not;
                 argsCount = 1;
+            } else if (strcmp(token, "or") == 0) {
+                value = or;
+                argsCount = 3;
+            } else if (strcmp(token, "and") == 0) {
+                value = and;
+                argsCount = 3;
             } else {
                 warnx("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'",
                        ctx->line,
@@ -142,7 +148,7 @@ void compileCodeSection(char *line, context *ctx) {
                 unsigned int address = parseInteger(ctx, token);
                 pushToCodeSection(ctx, 4, &address);
             }
-        } else if (value >= add && value <= not) {
+        } else if (value >= add && value <= not || (value == or || value == and)) {
             unsigned char registerIndex = parseRegister(ctx, token);
             pushToCodeSection(ctx, 1, &registerIndex);
         }

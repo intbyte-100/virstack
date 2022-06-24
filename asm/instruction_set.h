@@ -25,6 +25,8 @@ enum inst_set{
     not,
     jmp,
 
+    or,
+    and,
 
     exit_inst = 255
 };

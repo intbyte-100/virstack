@@ -24,6 +24,9 @@ enum set {
     not,
     jmp,
 
+    or,
+    and,
+
     exit = 255
 };
 
