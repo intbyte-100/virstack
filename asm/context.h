@@ -1,6 +1,7 @@
 #pragma once
 #include <stdio.h>
 #include <stdbool.h>
+#include "../container/container.h"
 
 typedef struct {
     int stackSize;
@@ -9,7 +10,9 @@ typedef struct {
     unsigned char* code;
     int line;
     bool compilationFailed;
-    int _currentWord;
+    int currentWord;
+    vrs_hashmap localLabels;
+    vrs_hashmap globalLabels;
 } context;
 
 context *createContext();

@@ -15,7 +15,8 @@ typedef struct {
 } vrs_linked_list;
 
 vrs_linked_list *vrsLinkedList();
-void vrsAddLinkedElement(vrs_linked_list *list,void *element);
+void* vrsAddLinkedElement(vrs_linked_list *list,void *element);
 void **vrsLinkedListElement(vrs_linked_list *list, unsigned int index);
 void *vrsRemoveElement(vrs_linked_list *list, unsigned int index);
+void vrsClearLinkedList(vrs_linked_list *list, vrs_dispose dispose);
 vrs_iterator *vrsLinkedListIterator(vrs_linked_list *list);

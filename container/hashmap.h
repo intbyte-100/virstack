@@ -17,5 +17,7 @@ typedef struct {
 }* vrs_hashmap;
 
 vrs_hashmap vrsCreateHashmap();
-void vrsPut(vrs_hashmap map, const char *name, void *object);
+void* vrsPut(vrs_hashmap map, const char *name, void *object);
 void* vrsGetElement(vrs_hashmap map,const char* name);
+void vrsDisposeHashmap(vrs_hashmap map, vrs_dispose dispose);
+void vrsClearHashmap(vrs_hashmap map, vrs_dispose dispose);

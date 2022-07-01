@@ -9,6 +9,36 @@
 
 const char delim[] = " ";
 
+
+int *parseDefinitionLabel(context *ctx, char *token) {
+    bool isGlobal = (strcmp(token, "global") == 0);
+
+    if (isGlobal)
+        token = strtok(NULL, delim);
+
+    size_t length = strlen(token);
+
+    if (token[length - 1] == ':' && token[0] >= '0' && token[0] <= '9') {
+        return vrsPut(isGlobal ? ctx->globalLabels : ctx->localLabels, token, 0);
+    }
+
+    warnx("invalid syntax in %i line, %i word:\n\tinvalid label definition \'%s\'",
+          ctx->line,
+          ctx->currentWord, token);
+    ctx->compilationFailed = true;
+
+    return NULL;
+}
+
+int* getLabel(context *ctx, char *token) {
+    int *local = vrsGetElement(ctx->localLabels, token);
+    int *global = vrsGetElement(ctx->globalLabels, token);
+
+    if (local != NULL)
+        return local;
+    return global;
+}
+
 unsigned char parseRegister(context *ctx, char *value) {
     bool invalidRegister = value[0] != 'R';
     char *error;
@@ -19,7 +49,7 @@ unsigned char parseRegister(context *ctx, char *value) {
         ctx->compilationFailed = true;
         warnx("invalid syntax in %i line, %i word:\n\tthe unknown register name \'%s\'",
               ctx->line,
-              ctx->_currentWord, value);
+              ctx->currentWord, value);
         return 255;
     }
 
@@ -47,7 +77,7 @@ long parseInteger(context *ctx, char *value) {
     if (*error == 0)
         return integer;
 
-    warnx("invalid syntax in %i line, %i word:\n\tinvalid number \'%s\'", ctx->line, ctx->_currentWord, value);
+    warnx("invalid syntax in %i line, %i word:\n\tinvalid number \'%s\'", ctx->line, ctx->currentWord, value);
     ctx->compilationFailed = true;
     return 0;
 
@@ -55,21 +85,22 @@ long parseInteger(context *ctx, char *value) {
 
 void compileCodeSection(char *token, context *ctx) {
 
-    ctx->_currentWord = 0;
+    ctx->currentWord = 0;
     int argsCount = 0;
 
     unsigned char value = 255;
     char *operandsType = NULL;
 
     while (token != NULL) {
-        ctx->_currentWord++;
+        bool knownSymbol = false;
+        ctx->currentWord++;
 
-        if (ctx->_currentWord == 1) {
-
+        if (ctx->currentWord == 1) {
 
             vrs_iterator *iter = vrsLinkedListIterator(opcodes);
             vrs_foreach(iter, opcode *i, {
                 if (strcmp(i->name, token) == 0) {
+                    knownSymbol = true;
                     argsCount = i->argc;
                     operandsType = &i->operands;
                     value = i->opcode;
@@ -78,11 +109,19 @@ void compileCodeSection(char *token, context *ctx) {
             })
             iter->dispose(iter);
 
+            if (!knownSymbol) {
+                ctx->compilationFailed = true;
+                warnx("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'\n",
+                      ctx->line,
+                      ctx->currentWord,
+                      token);
+                break;
+            }
             pushToCodeSection(ctx, 1, &value);
 
 
         } else {
-            char i = operandsType[ctx->_currentWord - 2];
+            char i = operandsType[ctx->currentWord - 2];
             if (i == REGISTER) {
                 unsigned char registerIndex = parseRegister(ctx, token);
                 pushToCodeSection(ctx, 1, &registerIndex);
@@ -94,11 +133,11 @@ void compileCodeSection(char *token, context *ctx) {
 
         token = strtok(NULL, delim);
     }
-    if (ctx->_currentWord && ctx->_currentWord - 1 != argsCount) {
+    if (ctx->currentWord && ctx->currentWord - 1 != argsCount) {
         warnx("invalid syntax in %i line, %i word:"
               "\n\trequired argument count = %i;"
               "\n\tprovided argument count = %i",
-              ctx->line, ctx->_currentWord, argsCount, ctx->_currentWord - 1);
+              ctx->line, ctx->currentWord, argsCount, ctx->currentWord - 1);
         ctx->compilationFailed = true;
     }
 }
@@ -106,26 +145,26 @@ void compileCodeSection(char *token, context *ctx) {
 
 void compileStackSection(char *token, context *ctx) {
 
-    ctx->_currentWord = 0;
+    ctx->currentWord = 0;
 
     char *tokens[2] = {NULL, NULL};
     while (token != NULL) {
-        if (ctx->_currentWord == 3) {
+        if (ctx->currentWord == 3) {
             ctx->compilationFailed = true;
             warnx("invalid syntax in %i line, %i word:"
                   "\n\trequirement argument count = 2;"
                   "\n\tprovided argument count = %i\n",
-                  ctx->line, ctx->_currentWord, ctx->_currentWord);
+                  ctx->line, ctx->currentWord, ctx->currentWord);
             break;
         }
-        tokens[ctx->_currentWord] = token;
+        tokens[ctx->currentWord] = token;
         token = strtok(NULL, delim);
-        ctx->_currentWord++;
+        ctx->currentWord++;
     }
 
     if (tokens[0] == NULL) return;
 
-    ctx->_currentWord = 2;
+    ctx->currentWord = 2;
     if (strcmp(tokens[0], "word") == 0) {
         long value = parseInteger(ctx, tokens[1]);
         pushToStack(ctx, 8, &value);
@@ -141,7 +180,7 @@ void compileStackSection(char *token, context *ctx) {
     } else {
         warnx("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'\n",
               ctx->line,
-              ctx->_currentWord,
+              ctx->currentWord,
               tokens[0]);
         ctx->compilationFailed = true;
     }
@@ -179,13 +218,13 @@ void compileFile(FILE *file, context *ctx) {
                 isStackSection = true;
             else if (strcmp(token, ".code") == 0)
                 isStackSection = false;
-            else
-                errx(1,"invalid syntax in %i line, %i word:\n\tinvalid section name \'%s\'\n",
-                      ctx->line,
-                      ctx->_currentWord,
-                      token);
-        }
-        else
+            else {
+                errx(1, "invalid syntax in %i line, %i word:\n\tinvalid section name \'%s\'\n",
+                     ctx->line,
+                     ctx->currentWord,
+                     token);
+            }
+        } else
             isSectionDefinition = false;
 
         if (!isSectionDefinition) {

@@ -1,5 +1,5 @@
 section .stack
-        half 1000
+        half 100
         half 7
         half 0
         word 24

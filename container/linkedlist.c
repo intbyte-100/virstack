@@ -6,21 +6,21 @@ vrs_linked_list *vrsLinkedList() {
     return malloc(sizeof(vrs_linked_list));
 }
 
-void vrsAddLinkedElement(vrs_linked_list *list, void *element) {
+void* vrsAddLinkedElement(vrs_linked_list *list, void *element) {
     vrs_list_node *node = malloc(sizeof(vrs_list_node));
     node->value = element;
     list->size++;
 
     if (list->first == NULL) {
         list->first = node;
-        return;
+        return &node->value;
     }
 
     vrs_list_node *each = list->first;
     while (true) {
         if (each->next == NULL) {
             each->next = node;
-            return;
+            return &node->value;
         }
         each = each->next;
     }
@@ -94,4 +94,20 @@ vrs_iterator *vrsLinkedListIterator(vrs_linked_list *list) {
     iterator->iterator.next = &linkedListNext;
     iterator->iterator.dispose = &linkedListIteratorDispose;
     return (vrs_iterator *) iterator;
+}
+
+void vrsClearLinkedList(vrs_linked_list *list, vrs_dispose dispose) {
+    int i = 0;
+    vrs_list_node *node = list->first;
+    vrs_list_node *next;
+
+    while (i++ != list->size) {
+        next = node->next;
+        if (dispose)
+            dispose(node->value);
+        free(node);
+        node = next;
+    }
+
+    list->size = 0;
 }
