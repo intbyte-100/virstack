@@ -18,8 +18,8 @@ unsigned char parseRegister(context *ctx, char *value) {
     if (*error != 0 || registerIndex > 5 || invalidRegister) {
         ctx->compilationFailed = true;
         warnx("invalid syntax in %i line, %i word:\n\tthe unknown register name \'%s\'",
-               ctx->line,
-               ctx->_currentWord, value);
+              ctx->line,
+              ctx->_currentWord, value);
         return 255;
     }
 
@@ -53,8 +53,8 @@ long parseInteger(context *ctx, char *value) {
 
 }
 
-void compileCodeSection(char *line, context *ctx) {
-    char *token = strtok(line, delim);
+void compileCodeSection(char *token, context *ctx) {
+
     ctx->_currentWord = 0;
     int argsCount = 0;
 
@@ -96,16 +96,15 @@ void compileCodeSection(char *line, context *ctx) {
     }
     if (ctx->_currentWord && ctx->_currentWord - 1 != argsCount) {
         warnx("invalid syntax in %i line, %i word:"
-               "\n\trequired argument count = %i;"
-               "\n\tprovided argument count = %i",
-               ctx->line, ctx->_currentWord, argsCount, ctx->_currentWord - 1);
+              "\n\trequired argument count = %i;"
+              "\n\tprovided argument count = %i",
+              ctx->line, ctx->_currentWord, argsCount, ctx->_currentWord - 1);
         ctx->compilationFailed = true;
     }
 }
 
 
-void compileStackSection(char *line, context *ctx) {
-    char *token = strtok(line, delim);
+void compileStackSection(char *token, context *ctx) {
 
     ctx->_currentWord = 0;
 
@@ -114,9 +113,9 @@ void compileStackSection(char *line, context *ctx) {
         if (ctx->_currentWord == 3) {
             ctx->compilationFailed = true;
             warnx("invalid syntax in %i line, %i word:"
-                   "\n\trequirement argument count = 2;"
-                   "\n\tprovided argument count = %i\n",
-                   ctx->line, ctx->_currentWord, ctx->_currentWord);
+                  "\n\trequirement argument count = 2;"
+                  "\n\tprovided argument count = %i\n",
+                  ctx->line, ctx->_currentWord, ctx->_currentWord);
             break;
         }
         tokens[ctx->_currentWord] = token;
@@ -141,9 +140,9 @@ void compileStackSection(char *line, context *ctx) {
         pushToStack(ctx, 1, &value);
     } else {
         warnx("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'\n",
-               ctx->line,
-               ctx->_currentWord,
-               tokens[0]);
+              ctx->line,
+              ctx->_currentWord,
+              tokens[0]);
         ctx->compilationFailed = true;
     }
 }
@@ -170,20 +169,30 @@ void compileFile(FILE *file, context *ctx) {
             else if (line[i] == ',' || line[i] == '\t') line[i] = ' ';
         } while (line[++i] != '\0');
 
+        char *token = strtok(line, delim);
+
         bool isSectionDefinition = true;
 
-        if (strcmp(line, ".stack") == 0)
-            isStackSection = true;
-        else if (strcmp(line, ".code") == 0)
-            isStackSection = false;
+        if (token != NULL && strcmp(token, "section") == 0) {
+            token = strtok(NULL, delim);
+            if (strcmp(token, ".stack") == 0)
+                isStackSection = true;
+            else if (strcmp(token, ".code") == 0)
+                isStackSection = false;
+            else
+                errx(1,"invalid syntax in %i line, %i word:\n\tinvalid section name \'%s\'\n",
+                      ctx->line,
+                      ctx->_currentWord,
+                      token);
+        }
         else
             isSectionDefinition = false;
 
         if (!isSectionDefinition) {
             if (isStackSection)
-                compileStackSection(line, ctx);
+                compileStackSection(token, ctx);
             else
-                compileCodeSection(line, ctx);
+                compileCodeSection(token, ctx);
         }
     }
 

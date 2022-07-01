@@ -26,7 +26,7 @@ void vrsAddLinkedElement(vrs_linked_list *list, void *element) {
     }
 }
 
-void **vrsGetElement(vrs_linked_list *list, unsigned int index) {
+void **vrsLinkedListElement(vrs_linked_list *list, unsigned int index) {
     int i = 0;
     vrs_list_node *node = list->first;
     while (i++ != index) {

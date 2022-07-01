@@ -1,9 +1,9 @@
-.stack
+section .stack
         half 1000
         half 7
         half 0
         word 24
-.code
+section .code
         ldh R0, 0
         ldh R1, 4
         ldh R2, 8
@@ -14,6 +14,7 @@
         cmp R4, R0, R2
         jmp R3, 24
         exit
+
 
 
 
