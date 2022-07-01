@@ -61,7 +61,10 @@ void *vrsGetElement(vrs_hashmap map, const char *name) {
 
 static __vrs_node *createNode(const char *name, void *object) {
     __vrs_node *node = malloc(sizeof(__vrs_node));
-    node->name = name;
+    int strLength = strlen(name);
+    char *string = malloc(strLength + 1);
+    strcpy(string, name);
+    node->name = string;
     node->object = (long) object;
     return node;
 }
@@ -105,6 +108,7 @@ void vrsClearHashmap(vrs_hashmap map, vrs_dispose dispose) {
         __vrs_bucket *bucket = vrsRemoveElement(map->_buckets, 0);
         while (bucket->nodes->size) {
             __vrs_node *node = vrsRemoveElement(bucket->nodes, 0);
+            free(node->name);
             if (dispose)
                 dispose((void *) node->object);
             free(node);

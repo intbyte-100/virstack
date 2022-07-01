@@ -10,27 +10,33 @@
 const char delim[] = " ";
 
 
-int *parseDefinitionLabel(context *ctx, char *token) {
+int *parseLabelDefinition(context *ctx, char *token) {
+    if (token == NULL) return NULL;
+
     bool isGlobal = (strcmp(token, "global") == 0);
 
-    if (isGlobal)
-        token = strtok(NULL, delim);
 
+    if (isGlobal) {
+        token = strtok(NULL, delim);
+        ctx->currentWord++;
+    }
     size_t length = strlen(token);
 
-    if (token[length - 1] == ':' && token[0] >= '0' && token[0] <= '9') {
+    if (token[length - 1] == ':' && !(token[0] >= '0' && token[0] <= '9')) {
+        token[length - 1] = '\0';
         return vrsPut(isGlobal ? ctx->globalLabels : ctx->localLabels, token, 0);
     }
 
-    warnx("invalid syntax in %i line, %i word:\n\tinvalid label definition \'%s\'",
-          ctx->line,
-          ctx->currentWord, token);
-    ctx->compilationFailed = true;
-
+    if (isGlobal) {
+        warnx("invalid syntax in %i line, %i word:\n\tinvalid label definition \'%s\'",
+              ctx->line,
+              ctx->currentWord + 1, token);
+        ctx->compilationFailed = true;
+    }
     return NULL;
 }
 
-int* getLabel(context *ctx, char *token) {
+int *getLabel(context *ctx, char *token) {
     int *local = vrsGetElement(ctx->localLabels, token);
     int *global = vrsGetElement(ctx->globalLabels, token);
 
@@ -57,7 +63,7 @@ unsigned char parseRegister(context *ctx, char *value) {
 }
 
 
-long parseInteger(context *ctx, char *value) {
+long parseOperand(context *ctx, char *value) {
     char *ptr = value;
     char *error;
     int base = 10;
@@ -77,7 +83,19 @@ long parseInteger(context *ctx, char *value) {
     if (*error == 0)
         return integer;
 
-    warnx("invalid syntax in %i line, %i word:\n\tinvalid number \'%s\'", ctx->line, ctx->currentWord, value);
+    if (value[0] >= '0' && value[0] <= '9') {
+        warnx("invalid syntax in %i line, %i word:\n\tinvalid number \'%s\'", ctx->line, ctx->currentWord, value);
+        ctx->compilationFailed = true;
+        return 0;
+    }
+
+    int *label;
+    if ((label = getLabel(ctx, value)))
+        return *label;
+
+    warnx("invalid syntax in %i line, %i word:\n\tundefined label \'%s\'",
+          ctx->line,
+          ctx->currentWord, value);
     ctx->compilationFailed = true;
     return 0;
 
@@ -91,6 +109,11 @@ void compileCodeSection(char *token, context *ctx) {
     unsigned char value = 255;
     char *operandsType = NULL;
 
+    int *label = parseLabelDefinition(ctx, token);
+    if (label) {
+        *label = ctx->codeSectionSize;
+        return;
+    }
     while (token != NULL) {
         bool knownSymbol = false;
         ctx->currentWord++;
@@ -126,7 +149,7 @@ void compileCodeSection(char *token, context *ctx) {
                 unsigned char registerIndex = parseRegister(ctx, token);
                 pushToCodeSection(ctx, 1, &registerIndex);
             } else if (i > REGISTER || i <= I64) {
-                unsigned long number = parseInteger(ctx, token);
+                unsigned long number = parseOperand(ctx, token);
                 pushToCodeSection(ctx, i, &number);
             }
         }
@@ -147,6 +170,12 @@ void compileStackSection(char *token, context *ctx) {
 
     ctx->currentWord = 0;
 
+    int *label = parseLabelDefinition(ctx, token);
+    if (label) {
+        *label = ctx->stackSize;
+        return;
+    }
+
     char *tokens[2] = {NULL, NULL};
     while (token != NULL) {
         if (ctx->currentWord == 3) {
@@ -166,16 +195,16 @@ void compileStackSection(char *token, context *ctx) {
 
     ctx->currentWord = 2;
     if (strcmp(tokens[0], "word") == 0) {
-        long value = parseInteger(ctx, tokens[1]);
+        long value = parseOperand(ctx, tokens[1]);
         pushToStack(ctx, 8, &value);
     } else if (strcmp(tokens[0], "half") == 0) {
-        int value = parseInteger(ctx, tokens[1]);
+        int value = parseOperand(ctx, tokens[1]);
         pushToStack(ctx, 4, &value);
     } else if (strcmp(tokens[0], "little") == 0) {
-        short value = parseInteger(ctx, tokens[1]);
+        short value = parseOperand(ctx, tokens[1]);
         pushToStack(ctx, 2, &value);
     } else if (strcmp(tokens[0], "byte") == 0) {
-        char value = parseInteger(ctx, tokens[1]);
+        char value = parseOperand(ctx, tokens[1]);
         pushToStack(ctx, 1, &value);
     } else {
         warnx("invalid syntax in %i line, %i word:\n\tthe unknown symbol \'%s\'\n",

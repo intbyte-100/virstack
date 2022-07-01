@@ -3,7 +3,7 @@
 #include "linkedlist.h"
 
 typedef struct {
-    const char* name;
+    char* name;
     long object;
 } __vrs_node;
 
