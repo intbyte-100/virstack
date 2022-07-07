@@ -221,7 +221,7 @@ void compileFile(FILE *file, context *ctx) {
 
     if (file == NULL) {
         warnx("invalid file\n");
-        exit(-1);
+        exit_inst(-1);
     }
 
     char *line = NULL;

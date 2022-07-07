@@ -27,7 +27,7 @@ void initOpcodes() {
     addOpcode("add", add, 3, REGISTER, REGISTER, REGISTER);
     addOpcode("sub", sub, 3, REGISTER, REGISTER, REGISTER);
     addOpcode("mul", mul, 3, REGISTER, REGISTER, REGISTER);
-    addOpcode("div", div_inst, 3, REGISTER, REGISTER, REGISTER);
+    addOpcode("div_inst", div_inst, 3, REGISTER, REGISTER, REGISTER);
 
     addOpcode("printi", printi, 1, REGISTER);
     addOpcode("cmp", cmp, 3, REGISTER, REGISTER, REGISTER);
@@ -38,5 +38,5 @@ void initOpcodes() {
     addOpcode("jmp", jmp, 2, REGISTER, I32);
     addOpcode("or", or, 3, REGISTER, REGISTER, REGISTER);
     addOpcode("and", and, 3, REGISTER, REGISTER, REGISTER);
-    addOpcode("exit", exit_inst, 0, '\0')
+    addOpcode("exit_inst", exit_inst, 0, '\0')
 }

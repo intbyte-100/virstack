@@ -14,7 +14,7 @@ enum inst_set{
     add,
     sub,
     mul,
-    div,
+    div_inst,
 
     printi,
 
@@ -27,7 +27,7 @@ enum inst_set{
     or,
     and,
 
-    exit = 255
+    exit_inst = 255
 };
 
 

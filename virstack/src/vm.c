@@ -2,7 +2,7 @@
 #include "malloc.h"
 #include "instruction_set.h"
 
-void (*__vrs_instructions[exit])(vrs_vm *vm, const vrs_byte *code);
+void (*__vrs_instructions[exit_inst])(vrs_vm *vm, const vrs_byte *code);
 
 void _mov(vrs_vm *vm, const vrs_byte *code) {
     vm->registers[code[vm->registers[6]]] = vm->registers[code[vm->registers[6] + 1]];
@@ -85,7 +85,8 @@ void _jmp(vrs_vm *vm, const vrs_byte *code) {
 }
 
 void _printi(vrs_vm *vm, const vrs_byte *code) {
-    printf("%li\n",vm->registers[code[vm->registers[6]]]);
+    long val = vm->registers[code[vm->registers[6]]];
+    printf("%li\n", val);
     vm->registers[6]++;
 }
 
@@ -115,7 +116,7 @@ void vrsInit(void) {
     __vrs_instructions[add] = &_add;
     __vrs_instructions[sub] = &_sub;
     __vrs_instructions[mul] = &_mul;
-    __vrs_instructions[div] = &_div;
+    __vrs_instructions[div_inst] = &_div;
     __vrs_instructions[cmp] = &_cmp;
     __vrs_instructions[cmpl] = &_cmpl;
     __vrs_instructions[cmpb] = &_cmpb;
@@ -139,7 +140,7 @@ void vrsDestroyVm(vrs_vm *vm) {
 }
 
 void vrsExecute(vrs_vm *vm, unsigned char *code) {
-    while (code[vm->registers[6]] != exit) {
+    while (code[vm->registers[6]] != exit_inst) {
         __vrs_instructions[code[vm->registers[6]++]](vm, code);
     }
 }

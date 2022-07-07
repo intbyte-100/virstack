@@ -1,3 +1,5 @@
+#include <error.h>
+#include <stdlib.h>
 #include "stdio.h"
 #include "string.h"
 #include "vistack.h"
@@ -16,6 +18,11 @@ int main(int argc, char **argv){
             .stackSize = 64
         };
         vrs_vm *vm = vrsInitVm(&config);
+        if (config.stackSize < scope->stackSize) {
+            fprintf(stderr, "StackoverflowException: vm stack size is %i bytes, when required stack size for code execution is %i bytes\n\tat virstack/main.c (22 line)\n", config.stackSize,
+                   scope->stackSize);
+            exit(1);
+        }
         memcpy(vm->stack, scope->stack, scope->stackSize);
         vrsExecute(vm, scope->code);
         vrsDispose(vm);
