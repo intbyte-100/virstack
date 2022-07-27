@@ -15,7 +15,7 @@ int main(int argc, char **argv){
         vrs_scope *scope = vrsMalloc(vrs_scope);
         vrs_loadVpe(fopen(argv[2], "r"), scope);
         vrs_config config = {
-            .stackSize = 64
+            .stackSize = 1024 * 64
         };
         vrs_vm *vm = vrsInitVm(&config);
         if (config.stackSize < scope->stackSize) {

@@ -39,6 +39,17 @@ enum inst_set{
     or,
     and,
 
+    frame,
+    ret,
+    retr,
+    retval,
+    fld,
+    fldh,
+    fldb,
+    fstr,
+    fstrh,
+    fstrb,
+
     exit_inst = 255
 };
 

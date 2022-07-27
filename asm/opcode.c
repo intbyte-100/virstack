@@ -38,5 +38,15 @@ void initOpcodes() {
     addOpcode("jmp", jmp, 2, REGISTER, I32);
     addOpcode("or", or, 3, REGISTER, REGISTER, REGISTER);
     addOpcode("and", and, 3, REGISTER, REGISTER, REGISTER);
-    addOpcode("exit_inst", exit_inst, 0, '\0')
+
+    addOpcode("frame", frame, 1, I16);
+    addOpcode("fld", fld, 2, REGISTER, I32);
+    addOpcode("fldh", fldh, 2, REGISTER, I32);
+    addOpcode("fldb", fldb, 2, REGISTER, I32);
+
+    addOpcode("fstr", fstr, 2, REGISTER, I32);
+    addOpcode("fstrh", fstrh, 2, REGISTER, I32);
+    addOpcode("fstrb", fstrb, 2, REGISTER, I32);
+    addOpcode("ret", ret, 0, '\0');
+    addOpcode("exit", exit_inst, 0, '\0')
 }

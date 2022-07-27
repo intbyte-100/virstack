@@ -5,7 +5,8 @@
 
 typedef struct {
     vrs_byte* stack;
-    long registers[7];
+    long registers[8];
+    long retVal;
     int conditionFlag;
 } vrs_vm;
 
