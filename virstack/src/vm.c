@@ -107,50 +107,50 @@ void _and(vrs_vm *vm, const vrs_byte *code) {
 
 void _frame(vrs_vm *vm, const vrs_byte *code) {
     short newFrame = vrsForceCast(short, code[vm->registers[6]]);
-    *(int *) &vm->stack[vm->registers[7] - 4 + newFrame] = vm->registers[7];
-    vm->registers[7] += newFrame;
+    *(int *) &vm->stack[vm->registers[7] + newFrame] = vm->registers[7];
+    vm->registers[7] += newFrame + 4;
     vm->registers[6]+=2;
 }
 
 void _ret(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[7] = *(int *) &vm->stack[vm->registers[7] - 4];
+    vm->registers[7] = *(int *) &vm->stack[vm->registers[7]];
 }
 
 void _retr(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[7] = *(int *) &vm->stack[vm->registers[7] - 4];
+    vm->registers[7] = *(int *) &vm->stack[vm->registers[7]];
     vm->retVal = vm->registers[code[vm->registers[6] + 1]];
     vm->registers[6]++;
 }
 
 void _fld(vrs_vm *vm, const vrs_byte *code){
     vm->registers[code[vm->registers[6]]] =
-            vrsForceCast(long, vm->stack[vm->registers[7] - 12 - vrsForceCast(int, code[vm->registers[6]+1])]);
+            vrsForceCast(long, vm->stack[vm->registers[7] - vrsForceCast(int, code[vm->registers[6]+1])]);
     vm->registers[6] += 5;
 }
 
 void _fldh(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[code[vm->registers[6]]] = vrsForceCast(int, vm->stack[vm->registers[7] - 8 - vrsForceCast(int, code[vm->registers[6]+1])]);
+    vm->registers[code[vm->registers[6]]] = vrsForceCast(int, vm->stack[vm->registers[7] - vrsForceCast(int, code[vm->registers[6]+1])]);
     vm->registers[6] += 5;
 }
 
 void _fldb(vrs_vm *vm, const vrs_byte *code) {
-    vm->registers[code[vm->registers[6]]] = vm->stack[vm->registers[7] - 5 - vrsForceCast(int, code[vm->registers[6] + 1])];
+    vm->registers[code[vm->registers[6]]] = vm->stack[vm->registers[7] - vrsForceCast(int, code[vm->registers[6] + 1])];
     vm->registers[6] += 5;
 }
 
 
 void _fstr(vrs_vm *vm, const vrs_byte *code) {
-    *(long *) &vm->stack[vm->registers[7] - 12 - vrsForceCast(int, code[vm->registers[6] + 1])] = vm->registers[code[vm->registers[6]]];
+    *(long *) &vm->stack[vm->registers[7] - vrsForceCast(int, code[vm->registers[6] + 1])] = vm->registers[code[vm->registers[6]]];
     vm->registers[6] += 5;
 }
 
 void _fstrh(vrs_vm *vm, const vrs_byte *code) {
-    *(int *) &vm->stack[vm->registers[7] - 8 - vrsForceCast(int, code[vm->registers[6] + 1])] = (int) vm->registers[code[vm->registers[6]]];
+    *(int *) &vm->stack[vm->registers[7] - vrsForceCast(int, code[vm->registers[6] + 1])] = (int) vm->registers[code[vm->registers[6]]];
     vm->registers[6] += 5;
 }
 
 void _fstrb(vrs_vm *vm, const vrs_byte *code) {
-    *(vrs_byte *) &vm->stack[vm->registers[7] - 5 - vrsForceCast(int, code[vm->registers[6] + 1])] = vm->registers[code[vm->registers[6]]];
+    *(vrs_byte *) &vm->stack[vm->registers[7] - vrsForceCast(int, code[vm->registers[6] + 1])] = vm->registers[code[vm->registers[6]]];
     vm->registers[6] += 5;
 }
 

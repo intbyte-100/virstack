@@ -10,7 +10,7 @@ typedef struct {
     int conditionFlag;
 } vrs_vm;
 
-
+extern void (*__vrs_instructions[255])(vrs_vm *vm, const vrs_byte *code);
 
 
 vrs_vm* vrsInitVm(vrs_config* config);

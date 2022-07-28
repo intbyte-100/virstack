@@ -6,14 +6,13 @@ b:
 
 
 section .code
-    frame 20
-    frame 12
+    frame 16
+    frame 8
     ld R0, a
     ld R1, b
     add R0, R0, R1
-    fstr R0, 0
-    fld R5, 0
+    fstr R0, 12
+    fld R5, 12
     printi R5
-    ret
     ret
     exit

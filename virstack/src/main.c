@@ -1,16 +1,18 @@
-#include <error.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "stdio.h"
 #include "string.h"
-#include "vistack.h"
 #include "loader.h"
+#include "debug.h"
 
 int main(int argc, char **argv){
+    bool isDebug = false;
+
     if(argc == 1) {
         printf("virstack virtual machine v0.1\n");
-    } else if (strcmp(argv[1], "--load") == 0) {
+    } else if (strcmp(argv[1], "--run") == 0 || (isDebug = strcmp(argv[1], "--debug") == 0)) {
         if (argv[2] == 0)
-            printf("Error: --load requires vpe file specification\n");
+            printf("Error: require vpe file specification\n");
         vrsInit();
         vrs_scope *scope = vrsMalloc(vrs_scope);
         vrs_loadVpe(fopen(argv[2], "r"), scope);
@@ -24,7 +26,11 @@ int main(int argc, char **argv){
             exit(1);
         }
         memcpy(vm->stack, scope->stack, scope->stackSize);
-        vrsExecute(vm, scope->code);
+        if (isDebug) {
+            vrsRunDebug(vm, scope->code);
+        } else {
+            vrsExecute(vm, scope->code);
+        }
         vrsDispose(vm);
         vrsDispose(scope);
     }
