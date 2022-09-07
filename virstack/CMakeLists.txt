@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 2.4)
 
-project(virstack)
+project(virstack C ASM_NASM)
+
+
 
 include_directories(src)
 
 add_executable(virstack src/main.c
+        src/interpreter.asm
+        src/interpreter.h
         src/config.h
         src/vm.c
         src/vm.h
