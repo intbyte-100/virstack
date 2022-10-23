@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     }
 
     context *ctx = createContext();
-
+    
     compileFile(source, ctx);
     writeObjectFile(output, ctx, format);
     destroyContext(ctx);

@@ -4,7 +4,7 @@
 #include "string.h"
 #include "loader.h"
 #include "debug.h"
-
+#include "interpreter.h"
 int main(int argc, char **argv){
     bool isDebug = false;
 
